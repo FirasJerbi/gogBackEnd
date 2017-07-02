@@ -13,10 +13,10 @@ var app = express();
 
 // Create Sql Connection
 app.use(connection(mysql, {
-host: "sql8.freemysqlhosting.net",
-user: "sql8179515",
-password: "c8DZSMtxj2",
-database: "sql8179515",
+host: "sql11.freemysqlhosting.net",
+user: "sql11183129",
+password: "ApZpL14M3x",
+database: "sql11183129",
 port : 3306
 },'request'));
 
