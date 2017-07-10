@@ -13,11 +13,11 @@ var app = express();
 
 // Create Sql Connection
 app.use(connection(mysql, {
-host: "sql11.freemysqlhosting.net",
-user: "sql11183129",
-password: "ApZpL14M3x",
-database: "sql11183129",
-port : 3306
+host: "mysql8.db4free.net",
+user: "gogames",
+password: "gogames2017",
+database: "gogames",
+port : 3307
 },'request'));
 
 // view engine setup
