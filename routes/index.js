@@ -96,10 +96,10 @@ router.post('/gogames/addUser', function(req,res,next){
 							}
 							console.log(result);
 							
-							res.json(reqObj.nicename);
+							res.json(reqObj.insertId);
 						});
 
-					}else res.json(false);
+					}else res.json(-1);
 				});
 				
 			}
