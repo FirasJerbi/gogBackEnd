@@ -35,18 +35,15 @@ router.post('/gogames/login',function(req,res,next){
 							var y=rows[0];
 							if(reqObj.pass==y['user_pass']){
 								mess=-2;
-								var z=[];
-								z.push(-2);
-								z.push(y['id']);
-								res.json(z);
+								res.json({ message : mess , insertId : y['id'] });
 							}
 							else{
-								res.json(mess);
+								res.json({"resultId":mess});
 							}
 							
 							
 						}
-						else res.json(-3);
+						else res.json({"resultId":-3});
 
 					}
 				});
@@ -96,7 +93,7 @@ router.post('/gogames/addUser', function(req,res,next){
 							}
 							console.log(result);
 							
-							res.json(result.insertId);
+							res.json({"insertId":result.insertId});
 						});
 
 					}else res.json(-1);
@@ -190,7 +187,7 @@ function insertEvent(reqObj,locationId, conn,res){
 			return next(err);
 			}
 			console.log(result);
-			res.json(reqObj.insertId);
+			res.json({"insertId":reqObj.insertId});
 		});	
 }
 
