@@ -9,7 +9,67 @@ router.get('/', function(req, res, next) {
 
 module.exports = router;
 
+
+
 /* Login Services */
+
+router.post('/gogames/fbgooglelogin', function(req,res,next){
+	try{
+		var reqObj = req.body;
+			
+		req.getConnection(function(err, conn){
+			if(err)
+			{
+				console.error('SQL Connection error: ', err);
+				return next(err);
+			}
+			else
+			{
+				conn.query("select * from wp_users where user_email = ?",[reqObj.email], function(err, rows, fields) {
+					if(err){
+						console.error('SQL error: ', err);
+						return next(err);
+					}
+					var check=0;
+					for(var evtIndex in rows) check++;
+					console.log("check result", check);
+					if (check==0){
+						var insertSql = "INSERT INTO wp_users SET ?";
+						var insertValues = {
+						
+						"user_email" : reqObj.email,
+						"user_login" :reqObj.nicename,
+						"user_nicename" :reqObj.nicename,
+						
+						"user_registered" : new Date()
+						};
+						var query = conn.query(insertSql, insertValues, function (err, result){
+							if(err){
+							console.error('SQL error: ', err);
+							return next(err);
+							}
+							console.log(result);
+							
+							res.json({"userId":result.insertId});
+						});
+
+					}else {
+						var y=rows[0];
+						res.json({"userId":y['ID']});
+					}
+				});
+				
+			}
+			});
+		}
+	catch(ex){
+	console.error("Internal error:"+ex);
+	return next(ex);
+	}
+});
+
+
+
 router.post('/gogames/login',function(req,res,next){
 	try{
 		var reqObj = req.body;
