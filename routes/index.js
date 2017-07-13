@@ -93,10 +93,10 @@ router.post('/gogames/addUser', function(req,res,next){
 							}
 							console.log(result);
 							
-							res.json({"insertId":result.insertId});
+							res.json({'exist':false,"insertId":result.insertId});
 						});
 
-					}else res.json(-1);
+					}else res.json({'exist':false});
 				});
 				
 			}
