@@ -31,14 +31,14 @@ router.post('/gogames/login',function(req,res,next){
 						var x=0;
 						for(var i in rows)x++;
 						if (x>0){
-							mess=-1;
+							
 							var y=rows[0];
 							if(reqObj.pass==y['user_pass']){
-								mess=-2;
-								res.json({ message : mess , insertId : y['id'] });
+								
+								res.json({ "resultId" : -1 , "userId" : y['id'] });
 							}
 							else{
-								res.json({"resultId":mess});
+								res.json({"resultId":-2});
 							}
 							
 							
