@@ -182,27 +182,32 @@ router.post('/gogames/createEvent',function(req,res,next){
 			}
 			else
 			{	
-
-				
-				var req1=conn.query("select location_id from wp_em_locations where location_town=? and location_country=?",[reqObj.event_city,reqObj.event_country],function(err, rows, fields) {
+				var insertSql = "INSERT INTO wp_em_events SET ?";
+				var insertValues = {
+				"event_name" : reqObj.event_name,
+				"event_owner" : reqObj.event_owner,
+				"event_start_time" : reqObj.event_start_time,
+				"event_start_date" : reqObj.event_start_date,
+				"event_end_time" : reqObj.event_end_time,
+				"event_end_date" : reqObj.event_end_date,
+				"event_date_created": reqObj.event_date_created,
+				"post_id" : 1000,
+				"event_status" : 1
+				};
+				var query = conn.query(insertSql, insertValues, function (err, result){
 					if(err){
-						console.error('SQL error: ', err);
-                        return next(err);
+					console.error('SQL error: ', err);
+					return next(err);
 					}else{
-						var x=0;
-						for( var i in rows)x++;
-						if(x>0){
-							var y=rows[0];
-							var locationId=y['location_id'];
-							console.log("location id update in select", locationId);
-							insertEvent(reqObj,locationId,conn,res);
-							
-						}else{
-							var insertLocation = "INSERT INTO wp_em_locations SET ?";
+							var insertLocation = "INSERT INTO wp_gog_event_locations SET ?";
 								var insertVals ={
-									"location_town":reqObj.event_city,
-									"post_id" : 1000,
-									"location_country":reqObj.event_country
+									"event_id":result.insertId,
+									"latitude":reqObj.latitude,
+									"longitude" : reqObj.longitude,
+									"country" : reqObj.country,
+									"city": reqObj.city,
+									"name":reqObj.name,
+									"address":reqObj.address
 								}
 								conn.query(insertLocation,insertVals,function(err,result){
 									if(err){
@@ -210,14 +215,12 @@ router.post('/gogames/createEvent',function(req,res,next){
 									return next(err);
 									}else{
 										locationId=result.insertId;
-										console.log("location id update in insert",locationId);
-										insertEvent(reqObj,locationId,conn,res);
+										res.json({"insertId":result.insertId});
 									}
 								});
 						}
-					}
-				});
-
+				
+				});	
 
 			
 			}
@@ -229,27 +232,6 @@ router.post('/gogames/createEvent',function(req,res,next){
     }
 });
 
-function insertEvent(reqObj,locationId, conn,res){
-		console.log("location id update after",locationId);
-		var insertSql = "INSERT INTO wp_em_events SET ?";
-		var insertValues = {
-		"event_name" : reqObj.event_name,
-		"event_owner" : reqObj.event_owner,
-		"event_start_time" : reqObj.event_start_time,
-		"event_start_date" : reqObj.event_start_date,
-		"location_id": locationId,
-		"post_id" : 1000,
-		"event_status" : 1
-		};
-		var query = conn.query(insertSql, insertValues, function (err, result){
-			if(err){
-			console.error('SQL error: ', err);
-			return next(err);
-			}
-			console.log(result);
-			res.json({"insertId":reqObj.insertId});
-		});	
-}
 
 /* Get Events Service. */
 router.get('/gogames/getEventsDetails', function(req, res, next) {
@@ -267,7 +249,7 @@ router.get('/gogames/getEventsDetails', function(req, res, next) {
                 console.error('SQL Connection error: ', err);
                 return next(err);
             } else {
-                conn.query('select U.user_nicename,E.event_name, E.event_start_date, E.event_start_time from wp_em_events E, wp_users U,wp_em_locations L  where E.event_owner=U.ID and E.location_id = L.location_id and L.location_town=? and L.location_country=?', [city,country] , function(err, rows, fields) {
+                conn.query('select G.name, G.longitude, G.latitude, U.user_nicename,E.event_name, E.event_start_date, E.event_start_time, E.event_end_date,E.event_end_time from wp_em_events E, wp_users U,wp_gog_event_locations G where E.event_owner=U.ID and G.event_id= E.event_id and (E.event_end_date>Date(now()) or (E.event_end_date=Date(now()) and E.event_end_time>time(now()))) and G.city=? and G.country=?', [city,country] , function(err, rows, fields) {
                     if (err) {
                         console.error('SQL error: ', err);
                         return next(err);
